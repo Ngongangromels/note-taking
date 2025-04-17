@@ -1,11 +1,12 @@
 "use client";
 
-import type { Note } from "@/type";
+
 import { TagIcon, Clock, Archive, Trash2, Edit } from "lucide-react";
 import { Button } from "../ui/button";
+import { Doc } from "@/convex/_generated/dataModel";
 
 interface NoteDetailProps {
-  note: Note;
+  note: Doc<"notes">;
   onArchive: (noteId: string) => void;
   onDelete: (noteId: string) => void;
   onEdit: () => void;
@@ -31,9 +32,7 @@ export function NoteDetail({
               Tags
             </span>
             <div className="ml-4 flex space-x-2">
-              <span className="text-sm dark:text-gray-300">
-                {note.tags.join(", ")}
-              </span>
+              <span className="text-sm dark:text-gray-300">{note.tag}</span>
             </div>
           </div>
 
@@ -43,7 +42,7 @@ export function NoteDetail({
               Last edited
             </span>
             <span className="ml-4 text-sm dark:text-gray-300">
-              {note.lastEdited}
+              {note._creationTime}
             </span>
           </div>
 
@@ -58,22 +57,14 @@ export function NoteDetail({
       </div>
 
       <div className="flex justify-end p-4 border-t border-gray-200 dark:border-gray-700 space-x-2">
-        <Button variant="outline" icon={<Edit size={16} />} onClick={onEdit}>
-          Edit Note
+        <Button variant="outline" onClick={onEdit}>
+          Edit Note {<Edit size={16} />}
         </Button>
-        <Button
-          variant="outline"
-          icon={<Archive size={16} />}
-          onClick={() => onArchive(note.id)}
-        >
-          Archive Note
+        <Button variant="outline" onClick={() => onArchive(note._id)}>
+          Archive Note {<Archive size={16} />}
         </Button>
-        <Button
-          variant="outline"
-          icon={<Trash2 size={16} />}
-          onClick={() => onDelete(note.id)}
-        >
-          Delete Note
+        <Button variant="outline" onClick={() => onDelete(note._id)}>
+          Delete Note {<Trash2 size={16} />}
         </Button>
       </div>
     </div>

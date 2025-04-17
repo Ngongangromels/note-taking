@@ -6,20 +6,24 @@ import { NoteDetail } from "@/components/notes/note-detail";
 import { NoteEditor } from "@/components/notes/note-editor";
 import { Search } from "@/components/search";
 import { View } from "@/hooks/use-note-navigation";
-import type { Note, Tag } from "@/type";
+
+import { Doc } from "@/convex/_generated/dataModel";
+import { useEffect, useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface DesktopLayoutProps {
   currentView: View;
-  activeNote: Note | null;
+  activeNote: Doc<"notes">;
   activeNoteId: string | null;
   activeTag?: string;
-  tags: Tag[];
-  filteredNotes: Note[];
+  tags: Doc<"notes">;
+  filteredNotes: Doc<"notes">[];
   onTagSelect: (tagId: string) => void;
   onNoteSelect: (noteId: string) => void;
   onCreateNote: () => void;
   onEditNote: () => void;
-  onSaveNote: (noteData: Partial<Note>) => void;
+  onSaveNote: (noteData: Partial<Doc<"notes">>) => void;
   onCancelEdit: () => void;
   onArchiveNote: (noteId: string) => void;
   onDeleteNote: (noteId: string) => void;
@@ -44,9 +48,18 @@ export function DesktopLayout({
   onDeleteNote,
   onSearch,
 }: DesktopLayoutProps) {
+
+  const [notesState, setNotesState] = useState<Doc<"notes">[] | null>(null);
+  const notes = useQuery(api.notes.get)
+
+  useEffect(() => {
+         if (notes) {
+           setNotesState(notes);
+         }
+  }, [])
   return (
     <div className="flex h-screen bg-white dark:bg-gray-900">
-      <Sidebar tags={tags} activeTag={activeTag} onTagSelect={onTagSelect} />
+      <Sidebar tags={Array.isArray(tags) ? tags : []} activeTag={activeTag} onTagSelect={onTagSelect} />
 
       <div className="flex-1 flex flex-col">
         <nav className="bg-background px-3 py-2 w-full flex items-center justify-between gap-x-4 border-b border-gray-200 ">
@@ -58,7 +71,16 @@ export function DesktopLayout({
 
         <div className="flex-1 flex">
           <NotesList
-            notes={filteredNotes}
+            notes={filteredNotes.map(note => ({
+              _id: note._id,
+              _creationTime: note._creationTime,
+              tag: note.tag,
+              title: note.title,
+              userId: note.userId,
+              isArchived: note.isArchived,
+              content: note.content,
+              isPublished: note.isPublished,
+            }))}
             activeNoteId={activeNoteId || ""}
             onNoteSelect={onNoteSelect}
             onCreateNote={onCreateNote}
@@ -77,19 +99,18 @@ export function DesktopLayout({
             {(currentView === View.EDIT || currentView === View.CREATE) && (
               <NoteEditor
                 note={
-                  currentView === View.EDIT && activeNote
-                    ? activeNote
+                  currentView === View.CREATE && activeNote
+                    ? {
+                      
+                        tag: activeNote.tag,
+                        title: activeNote.title,
+                        content: activeNote.content,
+                      }
                     : undefined
                 }
                 onSave={onSaveNote}
                 onCancel={onCancelEdit}
               />
-            )}
-
-            {currentView === View.DETAIL && (
-              <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
-                <Search onSearch={onSearch} />
-              </div>
             )}
           </div>
         </div>

@@ -1,10 +1,11 @@
 "use client";
 
-import type { Note } from "@/type";
+
 import { Tag } from "../ui/tag";
+import { Doc } from "@/convex/_generated/dataModel";
 
 interface NoteCardProps {
-  note: Note;
+  note: Doc<"notes">;
   isActive: boolean;
   onClick: () => void;
 }
@@ -20,12 +21,11 @@ export function NoteCard({ note, isActive, onClick }: NoteCardProps) {
     >
       <h2 className="font-medium dark:text-white">{note.title}</h2>
       <div className="flex mt-2 space-x-2 flex-wrap">
-        {note.tags.map((tag, index) => (
-          <Tag key={index} name={tag} />
-        ))}
+        
+          <Tag name={note.tag ?? ""} />
       </div>
       <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-        {note.lastEdited}
+        {note._creationTime}
       </div>
     </div>
   );

@@ -77,13 +77,17 @@ export function useNotesNavigation() {
    * Gestionnaire pour la création d'une nouvelle note
    */
   const handleCreateNote = useCallback(() => {
-      const promise = create({ title: "Untitled", content: "enter your note" })
+      const promise = create({
+        title: "Untitled",
+        content: "enter your note",
+        tag: "put a tag",
+      }).then(() => navigateTo(View.CREATE));
       toast.promise(promise, {
         loading: "Creating a new note...",
         success: "New note created!",
         error: "Failed to create a new note.",
       });
-    navigateTo(View.CREATE);
+    ;
   }, [navigateTo]);
 
   /**

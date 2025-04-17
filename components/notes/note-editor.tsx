@@ -1,32 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import React, {  useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { Note } from "@/type";
+import { Doc } from "@/convex/_generated/dataModel";
+
+;
 
 interface NoteEditorProps {
-  note?: Note;
-  onSave: (note: Partial<Note>) => void;
+  note?: Doc<"notes">;
+  onSave: (id: string) => void;
   onCancel: () => void;
 }
 
 export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
-  const [title, setTitle] = useState(note?.title || "");
-  const [content, setContent] = useState(note?.content || "");
-  const [tags, setTags] = useState(note?.tags?.join(", ") || "");
+  const [value, setValue] = useState(note)
 
-  const handleSave = () => {
-    const tagArray = tags
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag !== "");
+   const handleTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+     setValue((prev) => {
+       if (!prev) return prev;
+       return {
+         ...prev,
+         tag: e.target.value,
+       };
+     });
+   };
 
-    onSave({
-      title,
-      content,
-      tags: tagArray,
-    });
-  };
+   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue((prev) =>  {
+      if (!prev) return prev
+      return  {
+        ...prev,
+        title: e.target.value,
+      }
+    })
+   }
+
+   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue((prev) => {
+      if(!prev) return prev
+      return {
+        ...prev,
+        content: e.target.value
+      }
+    })
+   }
+
+
+//TODO: onSave() note
+
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-900">
@@ -42,8 +63,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             <input
               type="text"
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={value?.title}
+              onChange={handleTitleChange} 
               placeholder="Note title"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             />
@@ -54,13 +75,13 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
               htmlFor="tags"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              Tags (comma separated)
+              Tags
             </label>
             <input
               type="text"
               id="tags"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
+              value={value?.tag}
+              onChange={handleTagChange}
               placeholder="tag1, tag2, tag3"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             />
@@ -75,8 +96,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             </label>
             <textarea
               id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              value={value?.content}
+              onChange={handleContentChange}
               placeholder="Write your note here..."
               rows={15}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
@@ -90,7 +111,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={() => {}}>Save</Button>
         </div>
       </div>
     </div>

@@ -6,19 +6,14 @@ import { DesktopLayout } from "@/components/layouts/desktop-layout";
 import { useNotes } from "@/hooks/use-notes";
 import { useNotesNavigation, View } from "@/hooks/use-note-navigation";
 import { useMobile } from "@/hooks/use-mobile";
-import { TAGS } from "@/data/mock-data";
-import type { Note } from "@/type";
+
 
 export default function NotesApp() {
   // Hooks personnalisés pour la gestion des notes et de la navigation
   const {
     notes,
     filteredNotes,
-    filterNotesByTag,
     searchNotes,
-    createNote,
-    updateNote,
-    deleteNote,
     archiveNote,
   } = useNotes();
 
@@ -42,49 +37,70 @@ export default function NotesApp() {
 
   // Trouve la note active dans la liste des notes
   const activeNote = activeNoteId
-    ? notes.find((note) => note.id === activeNoteId)
+    ? notes.find((note) => note._id === activeNoteId) || null
     : null;
 
   // Gestionnaire pour la sélection d'un tag
-  const handleTagSelect = (tagId: string) => {
-    const newActiveTag = tagId === activeTag ? undefined : tagId;
-    setActiveTag(newActiveTag);
+  // const handleTagSelect = (tagId: string) => {
+    // const newActiveTag = tagId === activeTag ? undefined : tagId;
+    // setActiveTag(newActiveTag);
 
-    if (newActiveTag) {
-      const tagName = TAGS.find((tag) => tag.id === newActiveTag)?.name;
-      if (tagName) filterNotesByTag(tagName);
-    } else {
-      filterNotesByTag();
-    }
-  };
+    // if (newActiveTag) {
+    //   const tagName = TAGS.find((tag) => tag.id === newActiveTag)?.name;
+    //   if (tagName) filterNotesByTag(tagName);
+    // } else {
+    //   filterNotesByTag();
+    // }
 
   // Gestionnaire pour la sauvegarde d'une note
-  const handleSaveNote = (noteData: Partial<Note>) => {
-    if (currentView === View.CREATE) {
-      const newNote = createNote(noteData);
-      handleNoteSelect(newNote.id);
-    } else if (activeNoteId) {
-      updateNote(activeNoteId, noteData);
-      handleNoteSelect(activeNoteId);
-    }
+  const handleSaveNote = () => {
+    // if (currentView === View.CREATE) {
+    //   const newNote = createNote(noteData);
+    //   handleNoteSelect(newNote.id);
+    // } else if (activeNoteId) {
+    //   updateNote(activeNoteId, noteData);
+    //   handleNoteSelect(activeNoteId);
+    // }
   };
 
   // Gestionnaire pour la suppression d'une note
-  const handleDeleteNote = (noteId: string) => {
-    const firstNoteId = deleteNote(noteId);
-    if (firstNoteId) {
-      handleNoteSelect(firstNoteId);
-    } else {
-      handleBackToList();
-    }
+  const handleDeleteNote = () => {
+    // const firstNoteId = deleteNote(noteId);
+    // if (firstNoteId) {
+    //   handleNoteSelect(firstNoteId);
+    // } else {
+    //   handleBackToList();
+    // }
   };
 
   // Rendu conditionnel basé sur le mode d'affichage (mobile ou desktop)
   return isMobile ? (
     <MobileLayout
       currentView={currentView}
-      activeNote={activeNote}
-      filteredNotes={filteredNotes}
+      activeNote={
+        activeNote
+          ? {
+              id: activeNote._id,
+              tags: activeNote.tag ? [activeNote.tag] : [],
+              title: activeNote.title,
+              userId: activeNote.userId,
+              isArchived: activeNote.isArchived,
+              content: activeNote.content,
+              isPublished: activeNote.isPublished,
+              creationTime: activeNote._creationTime,
+            }
+          : null
+      }
+      filteredNotes={filteredNotes.map(note => ({
+        _id: note._id,
+        _creationTime: note._creationTime || Date.now(),
+        tag: note.tag,
+        isArchived: note.isArchived,
+        isPublished: note.isPublished,
+        title: note.title,
+        content: note.content,
+        userId: note.userId || "unknown",
+      }))}
       activeTab={activeTab}
       onNoteSelect={handleNoteSelect}
       onTabChange={handleTabChange}
@@ -96,12 +112,11 @@ export default function NotesApp() {
   ) : (
     <DesktopLayout
       currentView={currentView}
-      activeNote={activeNote}
+      activeNoteId={activeNote}
+    
       activeNoteId={activeNoteId}
       activeTag={activeTag}
-      tags={TAGS}
       filteredNotes={filteredNotes}
-      onTagSelect={handleTagSelect}
       onNoteSelect={handleNoteSelect}
       onCreateNote={handleCreateNote}
       onEditNote={handleEditNote}

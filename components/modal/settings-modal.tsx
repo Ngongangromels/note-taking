@@ -3,12 +3,12 @@
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 
 import { Label } from "../ui/label";
-import { ModeToggle } from "../mode-toggle";
 import { useSettings } from "@/hooks/use-settings";
 import { SignOutButton, useUser } from "@clerk/clerk-react";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { ChevronsLeftRight } from "lucide-react";
+import { ThemeToggle } from "../theme-toggle";
 
 export const SettingsModal = () => {
   const settings = useSettings();
@@ -27,7 +27,7 @@ export const SettingsModal = () => {
               Customize how Note taking looks on your device
             </span>
           </div>
-          <ModeToggle />
+          <ThemeToggle/>
        </div>
        <DropdownMenu>
         <DropdownMenuTrigger asChild>

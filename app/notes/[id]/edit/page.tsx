@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { NotesList } from "@/components/notes/notes-list";
+import { NoteEditor } from "@/components/notes/note-editor";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useMobile } from "@/hooks/use-mobile";
-import { MobileNotesList } from "@/components/mobile/mobile-notes-list";
-import { Search } from "@/components/search";
+import { MobileNoteEditor } from "@/components/mobile/mobile-note-editor";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -28,11 +28,15 @@ const exampleNotes = [
   },
 ];
 
-export default function NotesPage() {
+export default function EditNotePage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const isMobile = useMobile();
 
-  const create = useMutation(api.notes.create);
+  
+    const create = useMutation(api.notes.create)
+
+  // Pour la démo, on utilise la première note comme exemple
+  const note = exampleNotes[0];
 
   const handleNoteSelect = (noteId: string) => {
     router.push(`/notes/${noteId}`);
@@ -42,28 +46,37 @@ export default function NotesPage() {
     console.log("Tag selected:", tagId);
   };
 
-  const handleCreateNote = () => {
-    const promise = create({
-      title: "Untiled",
-      content: "Enter your note",
-      tag: "Put a tag",
-    }).then((noteId) => router.push(`/notes/create/${noteId}`));
+   const handleCreateNote = () => {
+      const promise = create({
+        title: "Untiled",
+        content: "Enter your note",
+        tag: "put a tag"
+      }).then((noteId) => router.push(`/notes/create/${noteId}`))
+  
+      toast.promise(promise, {
+            loading: "Creating new note...",
+            success: "New note created!",
+            error: "Failed to create note"
+      })
+    };
 
-    toast.promise(promise, {
-      loading: "Creating new note...",
-      success: "New note created !",
-      error: "Faild to create note.",
-    });
-    router.push("/notes/create");
+  const handleSaveNote = (noteData: any) => {
+    console.log("Save note:", noteData);
+    router.push(`/notes/${params.id}`);
+  };
+
+  const handleCancelEdit = () => {
+    router.push(`/notes/${params.id}`);
   };
 
   // Affichage mobile
   if (isMobile) {
     return (
-      <MobileNotesList
-        notes={exampleNotes}
-        onNoteSelect={handleNoteSelect}
-        onCreateNote={handleCreateNote}
+      <MobileNoteEditor
+        note={note}
+        onBack={() => router.push(`/notes/${params.id}`)}
+        onSave={handleSaveNote}
+        onCancel={handleCancelEdit}
       />
     );
   }
@@ -75,20 +88,24 @@ export default function NotesPage() {
 
       <div className="flex-1 flex flex-col">
         <div className="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold dark:text-white">All Notes</h1>
-          <Search />
+          <h1 className="text-xl font-semibold dark:text-white">Edit Note</h1>
+          <ThemeToggle />
         </div>
 
         <div className="flex-1 flex">
           <NotesList
             notes={exampleNotes}
-            activeNoteId=""
+            activeNoteId={params.id}
             onNoteSelect={handleNoteSelect}
             onCreateNote={handleCreateNote}
           />
 
-          <div className="flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-            <p className="text-lg">Select a note or create a new one</p>
+          <div className="flex-1 flex flex-col">
+            <NoteEditor
+              note={note}
+              onSave={handleSaveNote}
+              onCancel={handleCancelEdit}
+            />
           </div>
         </div>
       </div>

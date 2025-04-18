@@ -3,13 +3,11 @@
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { NotesList } from "@/components/notes/notes-list";
+import { NoteEditor } from "@/components/notes/note-editor";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useMobile } from "@/hooks/use-mobile";
-import { MobileNotesList } from "@/components/mobile/mobile-notes-list";
-import { Search } from "@/components/search";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
+import { MobileNoteEditor } from "@/components/mobile/mobile-note-editor";
+
 
 // Exemple de données pour la démo
 const exampleTags = [
@@ -28,11 +26,11 @@ const exampleNotes = [
   },
 ];
 
-export default function NotesPage() {
+export default function CreateNotePage() {
   const router = useRouter();
   const isMobile = useMobile();
 
-  const create = useMutation(api.notes.create);
+  
 
   const handleNoteSelect = (noteId: string) => {
     router.push(`/notes/${noteId}`);
@@ -42,28 +40,23 @@ export default function NotesPage() {
     console.log("Tag selected:", tagId);
   };
 
-  const handleCreateNote = () => {
-    const promise = create({
-      title: "Untiled",
-      content: "Enter your note",
-      tag: "Put a tag",
-    }).then((noteId) => router.push(`/notes/create/${noteId}`));
+  const handleSaveNote = (noteData: any) => {
+    console.log("Create note:", noteData);
+    // Dans une implémentation réelle, on créerait la note et on redirigerait vers la nouvelle note
+    router.push("/");
+  };
 
-    toast.promise(promise, {
-      loading: "Creating new note...",
-      success: "New note created !",
-      error: "Faild to create note.",
-    });
-    router.push("/notes/create");
+  const handleCancelEdit = () => {
+    router.push("/");
   };
 
   // Affichage mobile
   if (isMobile) {
     return (
-      <MobileNotesList
-        notes={exampleNotes}
-        onNoteSelect={handleNoteSelect}
-        onCreateNote={handleCreateNote}
+      <MobileNoteEditor
+        onBack={() => router.push("/")}
+        onSave={handleSaveNote}
+        onCancel={handleCancelEdit}
       />
     );
   }
@@ -75,8 +68,8 @@ export default function NotesPage() {
 
       <div className="flex-1 flex flex-col">
         <div className="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold dark:text-white">All Notes</h1>
-          <Search />
+          <h1 className="text-xl font-semibold dark:text-white">Create Note</h1>
+          <ThemeToggle />
         </div>
 
         <div className="flex-1 flex">
@@ -84,11 +77,11 @@ export default function NotesPage() {
             notes={exampleNotes}
             activeNoteId=""
             onNoteSelect={handleNoteSelect}
-            onCreateNote={handleCreateNote}
+            onCreateNote={() => {}}
           />
 
-          <div className="flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-            <p className="text-lg">Select a note or create a new one</p>
+          <div className="flex-1 flex flex-col">
+            <NoteEditor onSave={handleSaveNote} onCancel={handleCancelEdit} />
           </div>
         </div>
       </div>

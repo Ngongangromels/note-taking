@@ -1,7 +1,7 @@
 "use client";
 
 import { Home, Archive } from "lucide-react";
-import { NavItem } from "./item";
+import { Item } from "./item";
 import { TagItem } from "./tag-item";
 import type { Tag } from "@/type";
 
@@ -21,7 +21,7 @@ export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
 
       <div className="flex-1 overflow-auto">
         <div className="px-2 py-1">
-          <NavItem
+          <Item
             icon={<Home size={16} />}
             label="All Notes"
             isActive={true}
@@ -30,7 +30,7 @@ export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
         </div>
 
         <div className="px-2 py-1">
-          <NavItem icon={<Archive size={16} />} label="Archived Notes" />
+          <Item icon={<Archive size={16} />} label="Archived Notes" />
         </div>
 
         <div className="mt-6 px-4">

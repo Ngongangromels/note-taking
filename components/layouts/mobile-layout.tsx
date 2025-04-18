@@ -1,7 +1,7 @@
 "use client";
 import { MobileNav } from "@/components/mobile/mobile-nav";
 import { MobileNoteDetail } from "@/components/mobile/mobile-note-detail";
-import { MobileNoteEditor } from "@/components/mobile/mobile-note-edite";
+import { MobileNoteEditor } from "@/components/mobile/mobile-note-editor";
 
 import { View } from "@/hooks/use-note-navigation";
 import type { Note } from "@/type";

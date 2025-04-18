@@ -1,163 +1,74 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Doc } from "@/convex/_generated/dataModel";
-import {  useAuth } from "@clerk/clerk-react";
-import { useRouter } from "next/navigation";
+import type { Id } from "@/convex/_generated/dataModel";
+import type { Note } from "@/types";
+import { useCallback } from "react";
 
-/**
- * Hook personnalisé pour gérer l'état et les opérations sur les notes
- */
 export function useNotes() {
-  const auth = useAuth();
-  const router = useRouter();
-  const [notes, setNotes] = useState<Doc<"notes">[]>([]);
-  const [filteredNotes, setFilteredNotes] = useState<Doc<"notes">[]>([]);
+  // Récupérer les notes depuis Convex
+  const notes = useQuery(api.notes.getNotes) || [];
 
-  /**
-   * Filtre les notes en fonction d'un tag
-   */
+  // Mutations Convex
+  const createNoteMutation = useMutation(api.notes.createNote);
+  const updateNoteMutation = useMutation(api.notes.updateNote);
+  const deleteNoteMutation = useMutation(api.notes.deleteNote);
 
-  const note = useQuery(api.notes.get);
-
-  useEffect(() => {
-    if (auth.isSignedIn && note) {
-      setNotes(note);
-      setFilteredNotes(note);
-    } else {
-      router.push("/");
-    }
-  }, [auth, note, router]);
-
-  const filterNotesByTag = useCallback(
-    (tagName?: string) => {
-      if (!tagName) {
-        setFilteredNotes(notes || []);
-        return;
-      }
-
-      setFilteredNotes(
-        notes.filter(
-          (note) =>
-            Array.isArray(note.tag) &&
-            note.tag.some(
-              (tag: string) => tag.toLowerCase() === tagName.toLowerCase()
-            )
-        )
-      );
-    },
-    [notes]
-  );
-
-  /**
-   * Filtre les notes en fonction d'une requête de recherche
-   */
-  const searchNotes = useCallback(
-    (query: string) => {
-      if (!query) {
-        setFilteredNotes(notes);
-        return;
-      }
-
-      const lowerQuery = query.toLowerCase();
-      setFilteredNotes(
-        notes.filter(
-          (note) =>
-            note.title.toLowerCase().includes(lowerQuery) ||
-            note.content.toLowerCase().includes(lowerQuery) ||
-            (Array.isArray(note.tag) &&
-              note.tag.some((tag: string) =>
-                tag.toLowerCase().includes(lowerQuery)
-              ))
-        )
-      );
-    },
-    [notes]
-  );
-
-  /**
-   * Crée une nouvelle note
-   */
-  // const createNote = useCallback(
-  //   (noteData: Partial<Note>) => {
-  //     const newNote: Note = {
-  //       id: `note-${Date.now()}`,
-  //       title: noteData.title || "Untitled Note",
-  //       content: noteData.content || "",
-  //       tags: noteData.tags || [],
-  //       lastEdited: new Date().toLocaleDateString("en-US", {
-  //         day: "2-digit",
-  //         month: "short",
-  //         year: "numeric",
-  //       }),
-  //     };
-
-  //     const updatedNotes = [newNote, ...notes];
-  //     setNotes(updatedNotes);
-  //     setFilteredNotes(updatedNotes);
-
-  //     return newNote;
-  //   },
-  //   [notes]
-  // );
-
-  /**
-   * Met à jour une note existante
-   */
-  // const updateNote = useCallback(
-  //   (noteId: string, noteData: Partial<Note>) => {
-  //     const updatedNotes = notes.map((note) => {
-  //       if (note.id === noteId) {
-  //         return {
-  //           ...note,
-  //           title: noteData.title || note.title,
-  //           content: noteData.content || note.content,
-  //           tags: noteData.tags || note.tags,
-  //           lastEdited: new Date().toLocaleDateString("en-US", {
-  //             day: "2-digit",
-  //             month: "short",
-  //             year: "numeric",
-  //           }),
-  //         };
-  //       }
-  //       return note;
-  //     });
-
-  //     setNotes(updatedNotes);
-  //     setFilteredNotes(updatedNotes);
-  //   },
-  //   [notes]
-  // );
-
-  /**
-   * Supprime une note
-   */
-  // const deleteNote = useCallback(
-  //   (noteId: string) => {
-  //     const updatedNotes = notes.filter((note) => note.id !== noteId);
-  //     setNotes(updatedNotes);
-  //     setFilteredNotes(updatedNotes);
-
-  //     return updatedNotes.length > 0 ? updatedNotes[0].id : null;
-  //   },
-  //   [notes]
-  // );
-
-  /**
-   * Archive une note (simulation)
-   */
-  const archiveNote = useCallback((noteId: string) => {
-    console.log("Archive note", noteId);
-    // Implémentation future
+  // Filtrer les notes par tag
+  const filterNotesByTag = useCallback((tagName?: string) => {
+    return api.notes.filterNotesByTag({ tag: tagName });
   }, []);
 
+  const filteredNotes = (tagName?: string) => {
+    return useQuery(filterNotesByTag, { tag: tagName }) || [];
+  };
+
+  // Rechercher des notes
+  const searchNotes = useCallback((query: string) => {
+    return api.notes.searchNotes({ query });
+  }, []);
+
+  const searchedNotes = (query: string) => {
+    return useQuery(searchNotes, { query }) || [];
+  };
+
+  // Créer une note
+  const createNote = async (noteData: {
+    title: string;
+    content: string;
+    tags: string[];
+  }) => {
+    const id = await createNoteMutation(noteData);
+    return { id, ...noteData };
+  };
+
+  // Mettre à jour une note
+  const updateNote = async (
+    id: Id<"notes">,
+    noteData: { title?: string; content?: string; tags?: string[] }
+  ) => {
+    await updateNoteMutation({ id, ...noteData });
+  };
+
+  // Supprimer une note
+  const deleteNote = async (id: Id<"notes">) => {
+    await deleteNoteMutation({ id });
+  };
+
+  // Archiver une note (à implémenter plus tard)
+  const archiveNote = async (id: Id<"notes">) => {
+    console.log("Archive note:", id);
+    // Implémentation future
+  };
+
   return {
-    notes,
-    filteredNotes,
-    filterNotesByTag,
-    searchNotes,
+    notes: notes as Note[],
+    filterNotesByTag: filteredNotes,
+    searchNotes: searchedNotes,
+    createNote,
+    updateNote,
+    deleteNote,
     archiveNote,
   };
 }

@@ -7,15 +7,18 @@ import { NoteEditor } from "@/components/notes/note-editor";
 import { Search } from "@/components/search";
 import { View } from "@/hooks/use-note-navigation";
 
-import { Doc } from "@/convex/_generated/dataModel";
-import { useEffect, useState } from "react";
+import { Doc, Id } from "@/convex/_generated/dataModel";
+import { use } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 interface DesktopLayoutProps {
   currentView: View;
   activeNote: Doc<"notes">;
-  activeNoteId: string | null;
+  activeNoteId: Id<"notes">;
+  params: Promise<{
+    noteId: string;
+  }>;
   activeTag?: string;
   tags: Doc<"notes">;
   filteredNotes: Doc<"notes">[];
@@ -28,11 +31,11 @@ interface DesktopLayoutProps {
   onArchiveNote: (noteId: string) => void;
   onDeleteNote: (noteId: string) => void;
   onSearch: (query: string) => void;
-
 }
 
 export function DesktopLayout({
   currentView,
+  params,
   activeNote,
   activeNoteId,
   activeTag,
@@ -49,17 +52,17 @@ export function DesktopLayout({
   onSearch,
 }: DesktopLayoutProps) {
 
-  const [notesState, setNotesState] = useState<Doc<"notes">[] | null>(null);
-  const notes = useQuery(api.notes.get)
+  const resolvedParams = use(params)
+  const noteId = resolvedParams.noteId as Id<"notes">
 
-  useEffect(() => {
-         if (notes) {
-           setNotesState(notes);
-         }
-  }, [])
+  const notes = useQuery(api.notes.getById, { noteId });
   return (
     <div className="flex h-screen bg-white dark:bg-gray-900">
-      <Sidebar tags={Array.isArray(tags) ? tags : []} activeTag={activeTag} onTagSelect={onTagSelect} />
+      <Sidebar
+        tags={Array.isArray(tags) ? tags : []}
+        activeTag={activeTag}
+        onTagSelect={onTagSelect}
+      />
 
       <div className="flex-1 flex flex-col">
         <nav className="bg-background px-3 py-2 w-full flex items-center justify-between gap-x-4 border-b border-gray-200 ">
@@ -71,7 +74,7 @@ export function DesktopLayout({
 
         <div className="flex-1 flex">
           <NotesList
-            notes={filteredNotes.map(note => ({
+            notes={filteredNotes.map((note) => ({
               _id: note._id,
               _creationTime: note._creationTime,
               tag: note.tag,
@@ -98,16 +101,7 @@ export function DesktopLayout({
 
             {(currentView === View.EDIT || currentView === View.CREATE) && (
               <NoteEditor
-                note={
-                  currentView === View.CREATE && activeNote
-                    ? {
-                      
-                        tag: activeNote.tag,
-                        title: activeNote.title,
-                        content: activeNote.content,
-                      }
-                    : undefined
-                }
+                note={notes} 
                 onSave={onSaveNote}
                 onCancel={onCancelEdit}
               />

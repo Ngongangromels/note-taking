@@ -11,7 +11,7 @@ interface NavItemProps {
   onClick?: () => void;
 }
 
-export function NavItem({
+export function Item({
   icon,
   label,
   isActive = false,

@@ -1,7 +1,11 @@
 "use client";
 
 import { TagIcon } from "lucide-react";
-import type { Tag } from "@/type";
+
+interface Tag {
+  id: string;
+  name: string;
+}
 
 interface TagItemProps {
   tag: Tag;

@@ -2,20 +2,27 @@
 
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import type { Note } from "@/type";
+
+interface Note {
+  id?: string;
+  title: string;
+  content: string;
+  tags: string[];
+  lastEdited?: string;
+}
 
 interface MobileNoteEditorProps {
   note?: Note;
-  onBack: () => void;
-  onSave: (note: Partial<Note>) => void;
-  onCancel: () => void;
+  onBack?: () => void;
+  onSave?: (note: Partial<Note>) => void;
+  onCancel?: () => void;
 }
 
 export function MobileNoteEditor({
-  note,
-  onBack,
-  onSave,
-  onCancel,
+  note = { title: "", content: "", tags: [] },
+  onBack = () => {},
+  onSave = () => {},
+  onCancel = () => {},
 }: MobileNoteEditorProps) {
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");

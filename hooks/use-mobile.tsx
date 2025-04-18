@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export const useMobile =  (breakpoint = 768) => {
+export function useMobile(breakpoint = 768) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -10,10 +10,13 @@ export const useMobile =  (breakpoint = 768) => {
       setIsMobile(window.innerWidth < breakpoint);
     };
 
+    // Vérifier au chargement initial
     checkIfMobile();
 
+    // Ajouter un écouteur d'événement pour les changements de taille
     window.addEventListener("resize", checkIfMobile);
 
+    // Nettoyer l'écouteur d'événement
     return () => window.removeEventListener("resize", checkIfMobile);
   }, [breakpoint]);
 

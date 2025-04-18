@@ -1,20 +1,27 @@
 "use client";
 
 import { ArrowLeft, Trash2, Archive } from "lucide-react";
-import type { Note } from "@/type";
+
+interface Note {
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  lastEdited: string;
+}
 
 interface MobileNoteDetailProps {
   note: Note;
-  onBack: () => void;
-  onSave: () => void;
-  onCancel: () => void;
+  onBack?: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
 }
 
 export function MobileNoteDetail({
   note,
-  onBack,
-  onSave,
-  onCancel,
+  onBack = () => {},
+  onSave = () => {},
+  onCancel = () => {},
 }: MobileNoteDetailProps) {
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
@@ -41,7 +48,7 @@ export function MobileNoteDetail({
             Cancel
           </button>
           <button className="text-blue-500 font-medium" onClick={onSave}>
-            Save Note
+            Edit Note
           </button>
         </div>
       </div>

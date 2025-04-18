@@ -25,10 +25,11 @@ export const get = query({
 })
 
 export const getById = query({
-  args: { 
-      noteId: v.id("notes") 
-    },
+  args: {
+    noteId: v.id("notes"),
+  },
   handler: async (ctx, args) => {
+  
     const note = await ctx.db.get(args.noteId);
 
     if (!note) {

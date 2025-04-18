@@ -1,15 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { NotesList } from "@/components/notes/notes-list";
 import { NoteDetail } from "@/components/notes/note-detail";
 import { Search } from "@/components/search";
 import { useMobile } from "@/hooks/use-mobile";
 import { MobileNoteDetail } from "@/components/mobile/mobile-note-detail";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
+import { Id } from "@/convex/_generated/dataModel";
+import { Spinner } from "@/components/spinner";
 
 // Exemple de données pour la démo
 const exampleTags = [
@@ -28,11 +30,18 @@ const exampleNotes = [
   },
 ];
 
-export default function NotePage({ params }: { params: { id: string } }) {
+
+export default  function NotePage() {
+  const params = useParams()
+  const noteId: Id<"notes"> = params.id as Id<"notes"> || "default-note-id" as Id<"notes">;
   const router = useRouter();
   const isMobile = useMobile();
 
   const create = useMutation(api.notes.create)
+  const notes = useQuery(api.notes.get)
+  const noteCreated = useQuery(api.notes.getById, {
+    noteId: noteId as Id<"notes">,
+  });
 
   // Pour la démo, on utilise la première note comme exemple
   const note = exampleNotes[0];
@@ -60,7 +69,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
   };
 
   const handleEditNote = () => {
-    router.push(`/notes/${params.id}/edit`);
+    router.push(`/notes/${noteId}/edit`);
   };
 
   const handleBackToList = () => {
@@ -100,26 +109,35 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
       <div className="flex-1 flex flex-col">
         <div className="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold dark:text-white">All Notes</h1>
-          <Search/>
+          <h1 className="text-xl font-semibold dark:text-white">
+            All Notes
+          </h1>
+          <Search />
         </div>
 
         <div className="flex-1 flex">
           <NotesList
-            notes={exampleNotes}
-            activeNoteId={params.id}
+            notes={notes || []}
+            activeNoteId={noteId}
             onNoteSelect={handleNoteSelect}
             onCreateNote={handleCreateNote}
           />
 
           <div className="flex-1 flex flex-col">
-            <NoteDetail
-              note={note}
-              onArchive={handleArchiveNote}
-              onDelete={handleDeleteNote}
-              onEdit={handleEditNote}
-            />
-
+            {noteCreated ? (
+              <NoteDetail
+                note={noteCreated}
+                onArchive={handleArchiveNote}
+                onDelete={handleDeleteNote}
+                onEdit={handleEditNote}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-gray-500 dark:text-gray-400">
+                  <Spinner />
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

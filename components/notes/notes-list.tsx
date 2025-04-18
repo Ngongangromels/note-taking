@@ -3,14 +3,14 @@
 import { NoteCard } from "./note-card";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
-import { Doc } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useConvexAuth } from "convex/react";
-import { SignIn } from "@clerk/clerk-react";
+import { SignIn,} from "@clerk/clerk-react";
 
 interface NotesListProps {
   notes: Doc<"notes">[];
   activeNoteId: string;
-  onNoteSelect: (noteId: string) => void;
+  onNoteSelect: (noteId: Id<"notes">) => void;
   onCreateNote: () => void;
 }
 
@@ -22,6 +22,7 @@ export function NotesList({
 }: NotesListProps) {
   
  const { isAuthenticated } = useConvexAuth()
+  
   return (
     <div className="w-[540px] border-r border-gray-200 dark:border-gray-700 flex flex-col bg-white dark:bg-gray-900">
       <div className="p-4">

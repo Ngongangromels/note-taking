@@ -7,9 +7,10 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useMobile } from "@/hooks/use-mobile";
 import { MobileNotesList } from "@/components/mobile/mobile-notes-list";
 import { Search } from "@/components/search";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
+import { Id } from "@/convex/_generated/dataModel";
 
 // Exemple de données pour la démo
 const exampleTags = [
@@ -32,10 +33,12 @@ export default function NotesPage() {
   const router = useRouter();
   const isMobile = useMobile();
 
+  const notes = useQuery(api.notes.get);
   const create = useMutation(api.notes.create);
 
-  const handleNoteSelect = (noteId: string) => {
+  const handleNoteSelect = (noteId: Id<"notes">) => {
     router.push(`/notes/${noteId}`);
+    console.log(noteId);
   };
 
   const handleTagSelect = (tagId: string) => {
@@ -81,7 +84,7 @@ export default function NotesPage() {
 
         <div className="flex-1 flex">
           <NotesList
-            notes={exampleNotes}
+            notes={notes || []}
             activeNoteId=""
             onNoteSelect={handleNoteSelect}
             onCreateNote={handleCreateNote}

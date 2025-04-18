@@ -40,14 +40,17 @@ export default function CreateNotePage({params}: CreateNoteIdPageProps) {
  const resolvedParams = use(params)
  const noteId = resolvedParams.noteId  as Id<"notes">
 
+
+
  const note = useQuery(api.notes.getById, {noteId})
+ const notes = useQuery(api.notes.get)
    
   const router = useRouter();
   const isMobile = useMobile();
 
   
 
-  const handleNoteSelect = (noteId: string) => {
+  const handleNoteSelect = (noteId: Id<"notes">) => {
     router.push(`/notes/${noteId}`);
   };
 
@@ -89,7 +92,7 @@ export default function CreateNotePage({params}: CreateNoteIdPageProps) {
 
         <div className="flex-1 flex">
           <NotesList
-            notes={exampleNotes}
+            notes={notes || []}
             activeNoteId=""
             onNoteSelect={handleNoteSelect}
             onCreateNote={() => {}}

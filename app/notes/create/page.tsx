@@ -7,6 +7,9 @@ import { NoteEditor } from "@/components/notes/note-editor";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useMobile } from "@/hooks/use-mobile";
 import { MobileNoteEditor } from "@/components/mobile/mobile-note-editor";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 
 // Exemple de données pour la démo
@@ -30,9 +33,11 @@ export default function CreateNotePage() {
   const router = useRouter();
   const isMobile = useMobile();
 
+  const notes = useQuery(api.notes.get)
+
   
 
-  const handleNoteSelect = (noteId: string) => {
+  const handleNoteSelect = (noteId: Id<"notes">) => {
     router.push(`/notes/${noteId}`);
   };
 
@@ -74,7 +79,7 @@ export default function CreateNotePage() {
 
         <div className="flex-1 flex">
           <NotesList
-            notes={exampleNotes}
+            notes={notes || []}
             activeNoteId=""
             onNoteSelect={handleNoteSelect}
             onCreateNote={() => {}}

@@ -1,17 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { NotesList } from "@/components/notes/notes-list";
 import { NoteEditor } from "@/components/notes/note-editor";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useMobile } from "@/hooks/use-mobile";
 import { MobileNoteEditor } from "@/components/mobile/mobile-note-editor";
-import { use } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-
 
 // Exemple de données pour la démo
 const exampleTags = [
@@ -30,25 +28,15 @@ const exampleNotes = [
   },
 ];
 
-interface CreateNoteIdPageProps {
-    params: Promise<{
-        noteId: string;
-    }>
-}
+export default function CreateNotePage() {
+  // const params = useParams();
+  // // const noteId: Id<"notes"> = params.id as Id<"notes">;
 
-export default function CreateNotePage({params}: CreateNoteIdPageProps) {
- const resolvedParams = use(params)
- const noteId = resolvedParams.noteId  as Id<"notes">
+  // const noteCreated = useQuery(api.notes.getById, { noteId });
+  const notes = useQuery(api.notes.get);
 
-
-
- const note = useQuery(api.notes.getById, {noteId})
- const notes = useQuery(api.notes.get)
-   
   const router = useRouter();
   const isMobile = useMobile();
-
-  
 
   const handleNoteSelect = (noteId: Id<"notes">) => {
     router.push(`/notes/${noteId}`);
@@ -99,7 +87,10 @@ export default function CreateNotePage({params}: CreateNoteIdPageProps) {
           />
 
           <div className="flex-1 flex flex-col">
-            <NoteEditor onSave={handleSaveNote} onCancel={handleCancelEdit} />
+            <NoteEditor
+              onSave={handleSaveNote}
+              onCancel={handleCancelEdit}
+            />
           </div>
         </div>
       </div>

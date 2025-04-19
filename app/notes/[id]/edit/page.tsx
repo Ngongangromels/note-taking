@@ -35,9 +35,9 @@ export default function EditNotePage() {
   const router = useRouter();
   const isMobile = useMobile();
   const params = useParams()
-    const noteId: Id<"notes"> = params.id as Id<"notes"> || "default-note-id" as Id<"notes">;
+  const noteId: Id<"notes"> = params.id as Id<"notes"> || "default-note-id" as Id<"notes">;
 
-  
+    const update = useMutation(api.notes.update)
     const create = useMutation(api.notes.create)
     const notes = useQuery(api.notes.get)
     const noteCreated = useQuery(api.notes.getById, {
@@ -69,8 +69,13 @@ export default function EditNotePage() {
       })
     };
 
-  const handleSaveNote = (noteData: any) => {
-    console.log("Save note:", noteData);
+  const handleSaveNote = (noteId: Id<"notes">, title: string,  content: string, tag: string) => {
+    update({
+      id: noteId,
+      title,
+      content,
+      tag   
+   })
     router.push(`/notes/${params.id}`);
   };
 
@@ -112,6 +117,7 @@ export default function EditNotePage() {
           <div className="flex-1 flex flex-col">
             {noteCreated ? (
                <NoteEditor
+               noteId={noteId}
               note={noteCreated}
               onSave={handleSaveNote}
               onCancel={handleCancelEdit}

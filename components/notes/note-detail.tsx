@@ -3,11 +3,11 @@
 
 import { TagIcon, Clock, Archive, Trash2, Edit } from "lucide-react";
 import { Button } from "../ui/button";
-import { Doc } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 interface NoteDetailProps {
   note: Doc<"notes">;
-  onArchive: (noteId: string) => void;
+  onArchive: (noteId: Id<"notes">) => void;
   onDelete: (noteId: string) => void;
   onEdit: () => void;
 }

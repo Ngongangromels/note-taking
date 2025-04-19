@@ -38,6 +38,7 @@ export default  function NotePage() {
   const isMobile = useMobile();
 
   const create = useMutation(api.notes.create)
+  const archive = useMutation(api.notes.archive)
   const notes = useQuery(api.notes.get)
   const noteCreated = useQuery(api.notes.getById, {
     noteId: noteId as Id<"notes">,
@@ -76,9 +77,13 @@ export default  function NotePage() {
     router.push("/");
   };
 
-  const handleArchiveNote = (noteId: string) => {
-    console.log("Archive note:", noteId);
-    router.push("/");
+  const handleArchiveNote = (noteId: Id<"notes">) => {
+    const promise = archive({ id: noteId }).then(() => router.push("/"));
+    toast.promise(promise, {
+      loading: "Moving to trash....",
+      success: "Note moved to trash!",
+      error: "Failed to archive note.",
+    });
   };
 
   const handleDeleteNote = (noteId: string) => {

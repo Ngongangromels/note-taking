@@ -2,52 +2,35 @@
 
 import React, {  useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Doc } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 ;
 
 interface NoteEditorProps {
   note?: Doc<"notes">;
-  onSave: (id: string) => void;
+  noteId?: Id<"notes">;
+  onSave: (noteId: Id<"notes">, title: string, content: string, tags: string) => void;
   onCancel: () => void;
 }
 
-export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
-  const [value, setValue] = useState(note)
+export function NoteEditor({ note, noteId, onSave, onCancel }: NoteEditorProps) {
+   const [title, setTitle] = useState(note?.title || "");
+   const [content, setContent] = useState(note?.content || "");
+   const [tags, setTags] = useState(note?.tag || "");
 
-   const handleTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-     setValue((prev) => {
-       if (!prev) return prev;
-       return {
-         ...prev,
-         tag: e.target.value,
-       };
-     });
-   };
-
-   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((prev) =>  {
-      if (!prev) return prev
-      return  {
-        ...prev,
-        title: e.target.value,
-      }
-    })
-   }
-
-   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setValue((prev) => {
-      if(!prev) return prev
-      return {
-        ...prev,
-        content: e.target.value
-      }
-    })
-   }
-
-
-//TODO: onSave() note
-
+  //  const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+    
+  //   // // Convertir les tags en tableau
+  //   // const tagsArray = tags.split(",").map(tag => tag.trim());
+    
+  //   // Appeler la fonction onSave passée en props
+  //   if (noteId) {
+  //     onSave(noteId, title, content, tags);
+  //   } else {
+  //     console.error("noteId is undefined");
+  //   }
+  // };
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-900">
@@ -63,8 +46,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             <input
               type="text"
               id="title"
-              value={value?.title}
-              onChange={handleTitleChange} 
+              value={title}
+              onChange={(e) => setTitle(e.target.value)} 
               placeholder="Note title"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             />
@@ -80,8 +63,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             <input
               type="text"
               id="tags"
-              value={value?.tag}
-              onChange={handleTagChange}
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
               placeholder="tag1, tag2, tag3"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             />
@@ -96,8 +79,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             </label>
             <textarea
               id="content"
-              value={value?.content}
-              onChange={handleContentChange}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="Write your note here..."
               rows={15}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
@@ -107,13 +90,18 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       </div>
 
       <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-3xl mx-auto flex justify-end space-x-4">
+          
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={() => {}}>Save</Button>
+          <Button onClick={() => {
+            if (noteId) {
+              onSave(noteId, title, content, tags);
+            } else {
+              console.error("noteId is undefined");
+            }
+          }}>Save</Button>
         </div>
       </div>
-    </div>
   );
 }

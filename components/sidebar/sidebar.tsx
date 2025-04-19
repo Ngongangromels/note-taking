@@ -4,6 +4,8 @@ import { Home, Archive } from "lucide-react";
 import { Item } from "./item";
 import { TagItem } from "./tag-item";
 import type { Tag } from "@/type";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { TrashBox } from "../trash-box";
 
 interface SidebarProps {
   tags: Tag[];
@@ -30,7 +32,14 @@ export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
         </div>
 
         <div className="px-2 py-1">
-          <Item icon={<Archive size={16} />} label="Archived Notes" />
+          <Popover>
+            <PopoverTrigger className="w-full mt-4 ml-10">
+              <Item icon={<Archive size={16} />} label="Archived Notes" />
+            </PopoverTrigger>
+            <PopoverContent className="p-0 w-72">
+              <TrashBox/>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="mt-6 px-4">

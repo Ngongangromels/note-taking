@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { NotesList } from "@/components/notes/notes-list";
 import { NoteEditor } from "@/components/notes/note-editor";
@@ -32,6 +32,11 @@ const exampleNotes = [
 export default function CreateNotePage() {
   const router = useRouter();
   const isMobile = useMobile();
+  // const params = useParams()
+  // const noteId: Id<"notes"> = params.id as Id<"notes"> 
+  // const noteCreated = useQuery(api.notes.getById, {
+  //   noteId: noteId as Id<"notes">,
+  // });
 
   const notes = useQuery(api.notes.get)
 
@@ -86,7 +91,7 @@ export default function CreateNotePage() {
           />
 
           <div className="flex-1 flex flex-col">
-            <NoteEditor onSave={handleSaveNote} onCancel={handleCancelEdit} />
+            <NoteEditor note={noteCreated} onSave={handleSaveNote} onCancel={handleCancelEdit} />
           </div>
         </div>
       </div>

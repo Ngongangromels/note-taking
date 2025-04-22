@@ -1,25 +1,18 @@
 "use client";
 
 import { ThemeToggle } from "@/components/theme-toggle";
-
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  lastEdited: string;
-}
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 interface MobileNotesListProps {
-  notes?: Note[];
-  onNoteSelect?: (noteId: string) => void;
+  notes: Doc<"notes">[];
+  onNoteSelect?: (noteId: Id<"notes">) => void;
   onCreateNote?: () => void;
 }
 
 export function MobileNotesList({
-  notes = [],
-  onNoteSelect = () => {},
-  onCreateNote = () => {},
+  notes,
+  onNoteSelect,
+  onCreateNote,
 }: MobileNotesListProps) {
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
@@ -34,23 +27,20 @@ export function MobileNotesList({
       <div className="flex-1 overflow-auto">
         {notes.map((note) => (
           <div
-            key={note.id}
+            key={note._id}
             className="border-b border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-            onClick={() => onNoteSelect(note.id)}
+            onClick={() => onNoteSelect?.(note._id)}
           >
             <h2 className="font-medium dark:text-white">{note.title}</h2>
             <div className="flex mt-2 space-x-2 flex-wrap">
-              {note.tags.map((tag, index) => (
                 <span
-                  key={index}
                   className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs rounded dark:text-gray-200"
                 >
-                  {tag}
+                  {note.tag}
                 </span>
-              ))}
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              {note.lastEdited}
+              {note._creationTime}
             </div>
           </div>
         ))}

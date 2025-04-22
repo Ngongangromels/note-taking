@@ -13,49 +13,29 @@ import { Search } from "@/components/search";
 import { Id } from "@/convex/_generated/dataModel";
 import { Spinner } from "@/components/spinner";
 
-// Exemple de données pour la démo
-const exampleTags = [
-  { id: "dev", name: "Dev" },
-  { id: "personal", name: "Personal" },
-  { id: "work", name: "Work" },
-];
-
-
-const exampleNotes = [
-  {
-    id: "note1",
-    title: "Exemple de note",
-    content: "Contenu de la note...",
-    tags: ["Dev", "Work"],
-    lastEdited: "29 Oct 2024",
-  },
-];
-
 export default function EditNotePage() {
   const router = useRouter();
   const isMobile = useMobile();
-  const params = useParams()
-  const noteId: Id<"notes"> = params.id as Id<"notes"> || "default-note-id" as Id<"notes">;
+  const params = useParams();
+  const noteId: Id<"notes"> =
+    (params.id as Id<"notes">) || ("default-note-id" as Id<"notes">);
 
-    const update = useMutation(api.notes.update)
-    const create = useMutation(api.notes.create)
-    const notes = useQuery(api.notes.get)
-    const noteCreated = useQuery(api.notes.getById, {
-      noteId: noteId as Id<"notes">,
-    });
-    const tag = useQuery(api.notes.getTags)?.map((tag) => ({
-      _id: tag.noteId,
-      _creationTime: Date.now(),
-      tag: tag.tag,
-      title: "Default Title",
-      userId: "Default User",
-      isArchived: false,
-      content: "Default Content",
-      isPublished: false,
-    }));
-
-  // Pour la démo, on utilise la première note comme exemple
-  const note = exampleNotes[0];
+  const update = useMutation(api.notes.update);
+  const create = useMutation(api.notes.create);
+  const notes = useQuery(api.notes.get);
+  const noteCreated = useQuery(api.notes.getById, {
+    noteId: noteId as Id<"notes">,
+  });
+  const tag = useQuery(api.notes.getTags)?.map((tag) => ({
+    _id: tag.noteId,
+    _creationTime: Date.now(),
+    tag: tag.tag,
+    title: "Default Title",
+    userId: "Default User",
+    isArchived: false,
+    content: "Default Content",
+    isPublished: false,
+  }));
 
   const handleNoteSelect = (noteId: Id<"notes">) => {
     router.push(`/notes/${noteId}`);
@@ -65,27 +45,32 @@ export default function EditNotePage() {
     router.push(`/notes/${tagId}/edit`);
   };
 
-   const handleCreateNote = () => {
-      const promise = create({
-        title: "Untiled",
-        content: "Enter your note",
-        tag: "put a tag"
-      }).then((noteId) => router.push(`/notes/create/${noteId}`))
-  
-      toast.promise(promise, {
-            loading: "Creating new note...",
-            success: "New note created!",
-            error: "Failed to create note"
-      })
-    };
+  const handleCreateNote = () => {
+    const promise = create({
+      title: "Untiled",
+      content: "Enter your note",
+      tag: "put a tag",
+    }).then((noteId) => router.push(`/notes/create/${noteId}`));
 
-  const handleSaveNote = (noteId: Id<"notes">, title: string,  content: string, tag: string) => {
+    toast.promise(promise, {
+      loading: "Creating new note...",
+      success: "New note created!",
+      error: "Failed to create note",
+    });
+  };
+
+  const handleSaveNote = (
+    noteId: Id<"notes">,
+    title: string,
+    content: string,
+    tag: string
+  ) => {
     update({
       id: noteId,
       title,
       content,
-      tag   
-   })
+      tag,
+    });
     router.push(`/notes/${params.id}`);
   };
 
@@ -96,12 +81,26 @@ export default function EditNotePage() {
   // Affichage mobile
   if (isMobile) {
     return (
-      <MobileNoteEditor
-        note={note}
-        onBack={() => router.push(`/notes/${params.id}`)}
-        onSave={handleSaveNote}
-        onCancel={handleCancelEdit}
-      />
+      <>
+        {noteCreated ? (
+          <div>
+            <MobileNoteEditor
+              note={noteCreated}
+              onBack={() => router.push("/")}
+              onSave={handleSaveNote}
+              onCancel={handleCancelEdit}
+            />
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500 dark:text-gray-400">
+                <Spinner />
+              </p>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 
@@ -113,7 +112,7 @@ export default function EditNotePage() {
       <div className="flex-1 flex flex-col">
         <div className="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
           <h1 className="text-xl font-semibold dark:text-white">Edit Note</h1>
-          <Search/>
+          <Search />
         </div>
 
         <div className="flex-1 flex">
@@ -126,20 +125,19 @@ export default function EditNotePage() {
 
           <div className="flex-1 flex flex-col">
             {noteCreated ? (
-               <NoteEditor
-               noteId={noteId}
-              note={noteCreated}
-              onSave={handleSaveNote}
-              onCancel={handleCancelEdit}
-            />
-            ): (
+              <NoteEditor
+                noteId={noteId}
+                note={noteCreated}
+                onSave={handleSaveNote}
+                onCancel={handleCancelEdit}
+              />
+            ) : (
               <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-500 dark:text-gray-400">
-                       <Spinner/>
-                  </p>
-                </div>
+                <p className="text-gray-500 dark:text-gray-400">
+                  <Spinner />
+                </p>
+              </div>
             )}
-            
           </div>
         </div>
       </div>

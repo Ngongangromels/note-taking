@@ -1,27 +1,23 @@
 "use client";
 
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { ArrowLeft, Trash2, Archive } from "lucide-react";
 
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  lastEdited: string;
-}
-
 interface MobileNoteDetailProps {
-  note: Note;
+  note: Doc<"notes">;
   onBack?: () => void;
   onSave?: () => void;
   onCancel?: () => void;
+  onArchive: (noteId: Id<"notes">) => void;
+  onEdit?: () => void;
 }
 
 export function MobileNoteDetail({
   note,
-  onBack = () => {},
-  onSave = () => {},
-  onCancel = () => {},
+  onBack,
+  onCancel,
+  onEdit,
+  onArchive,
 }: MobileNoteDetailProps) {
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
@@ -38,7 +34,10 @@ export function MobileNoteDetail({
           <button className="text-gray-500 dark:text-gray-400">
             <Trash2 size={20} />
           </button>
-          <button className="text-gray-500 dark:text-gray-400">
+          <button
+            className="text-gray-500 dark:text-gray-400"
+            onClick={() => onArchive(note._id)}
+          >
             <Archive size={20} />
           </button>
           <button
@@ -47,7 +46,7 @@ export function MobileNoteDetail({
           >
             Cancel
           </button>
-          <button className="text-blue-500 font-medium" onClick={onSave}>
+          <button className="text-blue-500 font-medium" onClick={onEdit}>
             Edit Note
           </button>
         </div>
@@ -64,9 +63,7 @@ export function MobileNoteDetail({
             Tags
           </span>
           <div className="flex space-x-2">
-            <span className="text-sm dark:text-gray-300">
-              {note.tags.join(", ")}
-            </span>
+            <span className="text-sm dark:text-gray-300">{note.tag}</span>
           </div>
         </div>
 
@@ -74,15 +71,13 @@ export function MobileNoteDetail({
           <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">
             Last edited
           </span>
-          <span className="text-sm dark:text-gray-300">{note.lastEdited}</span>
+          <span className="text-sm dark:text-gray-300">
+            {note._creationTime}
+          </span>
         </div>
 
         <div className="prose max-w-none dark:prose-invert">
-          {note.content.split("\n").map((paragraph, index) => (
-            <p key={index} className="dark:text-gray-300">
-              {paragraph}
-            </p>
-          ))}
+          {note?.content}
         </div>
       </div>
     </div>

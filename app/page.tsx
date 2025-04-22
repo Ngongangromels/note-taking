@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { NotesList } from "@/components/notes/notes-list";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useMobile } from "@/hooks/use-mobile";
 import { MobileNotesList } from "@/components/mobile/mobile-notes-list";
 import { Search } from "@/components/search";
@@ -12,22 +11,6 @@ import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { Id } from "@/convex/_generated/dataModel";
 
-// Exemple de données pour la démo
-const exampleTags = [
-  { id: "dev", name: "Dev" },
-  { id: "personal", name: "Personal" },
-  { id: "work", name: "Work" },
-];
-
-const exampleNotes = [
-  {
-    id: "note1",
-    title: "Exemple de note",
-    content: "Contenu de la note...",
-    tags: ["Dev", "Work"],
-    lastEdited: "29 Oct 2024",
-  },
-];
 
 export default function NotesPage() {
   const router = useRouter();
@@ -75,7 +58,7 @@ export default function NotesPage() {
   if (isMobile) {
     return (
       <MobileNotesList
-        notes={exampleNotes}
+        notes={notes || []}
         onNoteSelect={handleNoteSelect}
         onCreateNote={handleCreateNote}
       />

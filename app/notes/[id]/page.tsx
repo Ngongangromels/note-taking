@@ -13,49 +13,29 @@ import { toast } from "sonner";
 import { Id } from "@/convex/_generated/dataModel";
 import { Spinner } from "@/components/spinner";
 
-// Exemple de données pour la démo
-const exampleTags = [
-  { id: "dev", name: "Dev" },
-  { id: "personal", name: "Personal" },
-  { id: "work", name: "Work" },
-];
-
-const exampleNotes = [
-  {
-    id: "note1",
-    title: "Exemple de note",
-    content: "Contenu de la note...",
-    tags: ["Dev", "Work"],
-    lastEdited: "29 Oct 2024",
-  },
-];
-
-
-export default  function NotePage() {
-  const params = useParams()
-  const noteId: Id<"notes"> = params.id as Id<"notes"> || "default-note-id" as Id<"notes">;
+export default function NotePage() {
+  const params = useParams();
+  const noteId: Id<"notes"> =
+    (params.id as Id<"notes">) || ("default-note-id" as Id<"notes">);
   const router = useRouter();
   const isMobile = useMobile();
 
-  const create = useMutation(api.notes.create)
-  const archive = useMutation(api.notes.archive)
-  const notes = useQuery(api.notes.get)
+  const create = useMutation(api.notes.create);
+  const archive = useMutation(api.notes.archive);
+  const notes = useQuery(api.notes.get);
   const noteCreated = useQuery(api.notes.getById, {
     noteId: noteId as Id<"notes">,
   });
-   const tag = useQuery(api.notes.getTags)?.map((tag) => ({
-     _id: tag.noteId,
-     _creationTime: Date.now(),
-     tag: tag.tag,
-     title: "Default Title",
-     userId: "Default User",
-     isArchived: false,
-     content: "Default Content",
-     isPublished: false,
-   }));
-
-  // Pour la démo, on utilise la première note comme exemple
-  const note = exampleNotes[0];
+  const tag = useQuery(api.notes.getTags)?.map((tag) => ({
+    _id: tag.noteId,
+    _creationTime: Date.now(),
+    tag: tag.tag,
+    title: "Default Title",
+    userId: "Default User",
+    isArchived: false,
+    content: "Default Content",
+    isPublished: false,
+  }));
 
   const handleNoteSelect = (noteId: string) => {
     router.push(`/notes/${noteId}`);
@@ -69,14 +49,14 @@ export default  function NotePage() {
     const promise = create({
       title: "Untiled",
       content: "Enter your note",
-      tag: "put a tag"
-    }).then((noteId) => router.push(`/notes/create/${noteId}`))
+      tag: "put a tag",
+    }).then((noteId) => router.push(`/notes/create/${noteId}`));
 
     toast.promise(promise, {
-          loading: "Creating new note...",
-          success: "New note created!",
-          error: "Failed to create note"
-    })
+      loading: "Creating new note...",
+      success: "New note created!",
+      error: "Failed to create note",
+    });
   };
 
   const handleEditNote = () => {
@@ -108,12 +88,27 @@ export default  function NotePage() {
   // Affichage mobile
   if (isMobile) {
     return (
-      <MobileNoteDetail
-        note={note}
-        onBack={handleBackToList}
-        onSave={handleEditNote}
-        onCancel={handleBackToList}
-      />
+      <>
+        {noteCreated ? (
+          <div>
+            <MobileNoteDetail
+              note={noteCreated}
+              onBack={handleBackToList}
+              onArchive={handleArchiveNote}
+              onEdit={handleEditNote}
+              onCancel={handleBackToList}
+            />
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500 dark:text-gray-400">
+                <Spinner />
+              </p>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 

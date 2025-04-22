@@ -1,49 +1,33 @@
 "use client";
 
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { Button } from "../ui/button";
 
-interface Note {
-  id?: string;
-  title: string;
-  content: string;
-  tags: string[];
-  lastEdited?: string;
-}
 
 interface MobileNoteEditorProps {
-  note?: Note;
+  note?: Doc<"notes">;
+  noteId?: Id<"notes">,
   onBack?: () => void;
-  onSave?: (note: Partial<Note>) => void;
+  onSave?: (noteId: Id<"notes">, title: string, content: string, tag: string) => void;
   onCancel?: () => void;
 }
 
 export function MobileNoteEditor({
-  note = { title: "", content: "", tags: [] },
-  onBack = () => {},
-  onSave = () => {},
-  onCancel = () => {},
+  note,
+  noteId,
+  onBack,
+  onSave,
+  onCancel,
 }: MobileNoteEditorProps) {
-  const [title, setTitle] = useState(note?.title || "");
-  const [content, setContent] = useState(note?.content || "");
-  const [tags, setTags] = useState(note?.tags?.join(", ") || "");
+ const [title, setTitle] = useState(note?.title || "");
+    const [content, setContent] = useState(note?.content || "");
+    const [tags, setTags] = useState(note?.tag || "");
 
-  const handleSave = () => {
-    const tagArray = tags
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag !== "");
-
-    onSave({
-      title,
-      content,
-      tags: tagArray,
-    });
-  };
 
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
-      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
         <button
           className="flex items-center text-gray-600 dark:text-gray-300"
@@ -59,9 +43,17 @@ export function MobileNoteEditor({
           >
             Cancel
           </button>
-          <button className="text-blue-500 font-medium" onClick={handleSave}>
+         <Button onClick={() => {
+            if (noteId) {
+              if (onSave) {
+                onSave(noteId, title, content, tags);
+              } else {
+                console.error("onSave is undefined");
+              }
+            }
+          }}>
             Save Note
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -80,7 +72,7 @@ export function MobileNoteEditor({
             type="text"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
-            placeholder="Tags (comma separated)"
+            placeholder="Tags"
             className="w-full text-sm text-gray-600 dark:text-gray-400 bg-transparent border-none focus:outline-none focus:ring-0"
           />
         </div>

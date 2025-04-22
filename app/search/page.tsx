@@ -25,7 +25,6 @@ export default function SearchPage() {
 
   const handleSearch = (searchQuery: string) => {
     setQuery(searchQuery);
-    // Dans une implémentation réelle, on filtrerait les notes en fonction de la recherche
     setFilteredNotes(exampleNotes);
   };
 

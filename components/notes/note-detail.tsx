@@ -1,7 +1,7 @@
 "use client";
 
 
-import { TagIcon, Clock, Archive, Trash2, Edit } from "lucide-react";
+import { TagIcon, Clock, Archive, Edit } from "lucide-react";
 import { Button } from "../ui/button";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 
@@ -15,7 +15,6 @@ interface NoteDetailProps {
 export function NoteDetail({
   note,
   onArchive,
-  onDelete,
   onEdit,
 }: NoteDetailProps) {
   return (
@@ -58,9 +57,6 @@ export function NoteDetail({
         </Button>
         <Button variant="outline" onClick={() => onArchive(note._id)}>
           Archive Note {<Archive size={16} />}
-        </Button>
-        <Button variant="outline" onClick={() => onDelete(note._id)}>
-          Delete Note {<Trash2 size={16} />}
         </Button>
       </div>
     </div>

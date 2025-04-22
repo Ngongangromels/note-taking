@@ -3,17 +3,19 @@
 import { Home, Archive } from "lucide-react";
 import { Item } from "./item";
 import { TagItem } from "./tag-item";
-import type { Tag } from "@/type";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { TrashBox } from "../trash-box";
+import { useConvexAuth } from "convex/react";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 interface SidebarProps {
-  tags: Tag[];
+  tags: Doc<"notes">[];
   activeTag?: string;
-  onTagSelect?: (tagId: string) => void;
+  onTagSelect?: (tagId: Id<"notes">) => void;
 }
 
 export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
+  const { isAuthenticated } = useConvexAuth()
   return (
     <div className="w-64 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full bg-white dark:bg-gray-900">
       <div className="p-4 flex items-center">
@@ -30,18 +32,22 @@ export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
             hasChildren={true}
           />
         </div>
-
-        <div className="px-2 py-1">
-          <Popover>
-            <PopoverTrigger className="w-full mt-4 ml-10">
-              <Item icon={<Archive size={16} />} label="Archived Notes" />
-            </PopoverTrigger>
-            <PopoverContent className="p-0 w-72">
-              <TrashBox/>
-            </PopoverContent>
-          </Popover>
-        </div>
-
+        {isAuthenticated ? (
+          <div className="px-2 py-1">
+            <Popover>
+              <PopoverTrigger className="w-full mt-4 ml-10">
+                <Item icon={<Archive size={16} />} label="Archived Notes" />
+              </PopoverTrigger>
+              <PopoverContent className="p-0 w-72">
+                <TrashBox />
+              </PopoverContent>
+            </Popover>
+          </div>
+        ) : (
+          <div className="px-2 py-1">
+            <Item icon={<Archive size={16} />} label="Archived Notes" />
+          </div>
+        )}
         <div className="mt-6 px-4">
           <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">
             Tags
@@ -49,10 +55,10 @@ export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
           <div className="mt-2 space-y-1">
             {tags.map((tag) => (
               <TagItem
-                key={tag.id}
+                key={tag._id}
                 tag={tag}
-                isActive={activeTag === tag.id}
-                onClick={() => onTagSelect?.(tag.id)}
+                isActive={activeTag === tag._id}
+                onClick={() => onTagSelect?.(tag._id)}
               />
             ))}
           </div>

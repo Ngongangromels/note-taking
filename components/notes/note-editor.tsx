@@ -18,20 +18,6 @@ export function NoteEditor({ note, noteId, onSave, onCancel }: NoteEditorProps) 
    const [content, setContent] = useState(note?.content || "");
    const [tags, setTags] = useState(note?.tag || "");
 
-  //  const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-    
-  //   // // Convertir les tags en tableau
-  //   // const tagsArray = tags.split(",").map(tag => tag.trim());
-    
-  //   // Appeler la fonction onSave passée en props
-  //   if (noteId) {
-  //     onSave(noteId, title, content, tags);
-  //   } else {
-  //     console.error("noteId is undefined");
-  //   }
-  // };
-
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-900">
       <div className="p-4 flex-1 overflow-auto">

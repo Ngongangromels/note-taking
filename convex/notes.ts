@@ -193,3 +193,31 @@ export const remove = mutation({
     return note;
   },
 });
+
+export const getTags = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError("Not authenticated");
+    }
+
+    const userId = identity.subject;
+
+    const notes = await ctx.db
+      .query("notes")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter((q) => q.eq(q.field("isArchived"), false))
+      .collect();
+
+    const tagsWithIds = notes.flatMap((note) => {
+      const tags = Array.isArray(note.tag) ? note.tag : [note.tag];
+      return tags.map((tag) => ({
+        noteId: note._id,
+        tag: tag,
+      }));
+    });
+
+    return tagsWithIds;
+  },
+});

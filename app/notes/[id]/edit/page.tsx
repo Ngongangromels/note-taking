@@ -43,6 +43,16 @@ export default function EditNotePage() {
     const noteCreated = useQuery(api.notes.getById, {
       noteId: noteId as Id<"notes">,
     });
+    const tag = useQuery(api.notes.getTags)?.map((tag) => ({
+      _id: tag.noteId,
+      _creationTime: Date.now(),
+      tag: tag.tag,
+      title: "Default Title",
+      userId: "Default User",
+      isArchived: false,
+      content: "Default Content",
+      isPublished: false,
+    }));
 
   // Pour la démo, on utilise la première note comme exemple
   const note = exampleNotes[0];
@@ -51,8 +61,8 @@ export default function EditNotePage() {
     router.push(`/notes/${noteId}`);
   };
 
-  const handleTagSelect = (tagId: string) => {
-    console.log("Tag selected:", tagId);
+  const handleTagSelect = (tagId: Id<"notes">) => {
+    router.push(`/notes/${tagId}/edit`);
   };
 
    const handleCreateNote = () => {
@@ -98,7 +108,7 @@ export default function EditNotePage() {
   // Affichage desktop
   return (
     <div className="flex h-screen bg-white dark:bg-gray-900">
-      <Sidebar tags={exampleTags} onTagSelect={handleTagSelect} />
+      <Sidebar tags={tag || []} onTagSelect={handleTagSelect} />
 
       <div className="flex-1 flex flex-col">
         <div className="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">

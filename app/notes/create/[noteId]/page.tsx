@@ -29,11 +29,21 @@ const exampleNotes = [
 ];
 
 export default function CreateNotePage() {
-  // const params = useParams();
-  // // const noteId: Id<"notes"> = params.id as Id<"notes">;
+  const params = useParams();
+  const noteId: Id<"notes"> = params.id as Id<"notes">;
 
-  // const noteCreated = useQuery(api.notes.getById, { noteId });
+  const noteCreated = useQuery(api.notes.getById, { noteId });
   const notes = useQuery(api.notes.get);
+  const tag = useQuery(api.notes.getTags)?.map((tag) => ({
+    _id: tag.noteId,
+    _creationTime: Date.now(),
+    tag: tag.tag,
+    title: "Default Title",
+    userId: "Default User",
+    isArchived: false,
+    content: "Default Content",
+    isPublished: false,
+  }));
 
   const router = useRouter();
   const isMobile = useMobile();
@@ -42,9 +52,9 @@ export default function CreateNotePage() {
     router.push(`/notes/${noteId}`);
   };
 
-  const handleTagSelect = (tagId: string) => {
-    console.log("Tag selected:", tagId);
-  };
+ const handleTagSelect = (tagId: Id<"notes">) => {
+   router.push(`/notes/${tagId}/edit`);
+ };
 
   const handleSaveNote = (noteData: any) => {
     console.log("Create note:", noteData);
@@ -70,7 +80,7 @@ export default function CreateNotePage() {
   // Affichage desktop
   return (
     <div className="flex h-screen bg-white dark:bg-gray-900">
-      <Sidebar tags={exampleTags} onTagSelect={handleTagSelect} />
+      <Sidebar tags={tag || []} onTagSelect={handleTagSelect} />
 
       <div className="flex-1 flex flex-col">
         <div className="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
@@ -88,6 +98,7 @@ export default function CreateNotePage() {
 
           <div className="flex-1 flex flex-col">
             <NoteEditor
+            note={noteCreated}
               onSave={handleSaveNote}
               onCancel={handleCancelEdit}
             />

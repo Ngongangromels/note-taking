@@ -19,7 +19,7 @@ const exampleNotes = [
 
 export default function SearchPage() {
   const router = useRouter();
-  const isMobile = useMobile();
+  // const isMobile = useMobile();
   const [query, setQuery] = useState("");
   const [filteredNotes, setFilteredNotes] = useState(exampleNotes);
 

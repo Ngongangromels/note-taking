@@ -11,22 +11,6 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-// Exemple de données pour la démo
-const exampleTags = [
-  { id: "dev", name: "Dev" },
-  { id: "personal", name: "Personal" },
-  { id: "work", name: "Work" },
-];
-
-const exampleNotes = [
-  {
-    id: "note1",
-    title: "Exemple de note",
-    content: "Contenu de la note...",
-    tags: ["Dev", "Work"],
-    lastEdited: "29 Oct 2024",
-  },
-];
 
 export default function CreateNotePage() {
   const params = useParams();
@@ -48,18 +32,16 @@ export default function CreateNotePage() {
   const router = useRouter();
   const isMobile = useMobile();
 
-  const handleNoteSelect = (noteId: Id<"notes">) => {
-    router.push(`/notes/${noteId}`);
-  };
+  // const handleNoteSelect = (noteId: Id<"notes">) => {
+  //   router.push(`/notes/${noteId}`);
+  // };
 
  const handleTagSelect = (tagId: Id<"notes">) => {
    router.push(`/notes/${tagId}/edit`);
  };
 
-  const handleSaveNote = (noteData: any) => {
-    console.log("Create note:", noteData);
-    // Dans une implémentation réelle, on créerait la note et on redirigerait vers la nouvelle note
-    router.push("/");
+  const handleSaveNote = () => {
+    console.log("Create note:");
   };
 
   const handleCancelEdit = () => {
@@ -92,15 +74,15 @@ export default function CreateNotePage() {
           <NotesList
             notes={notes || []}
             activeNoteId=""
-            onNoteSelect={handleNoteSelect}
+            onNoteSelect={() => {}}
             onCreateNote={() => {}}
           />
 
           <div className="flex-1 flex flex-col">
             <NoteEditor
             note={noteCreated}
-              onSave={handleSaveNote}
-              onCancel={handleCancelEdit}
+              onSave={() => {}}
+              onCancel={() => {}}
             />
           </div>
         </div>

@@ -39,10 +39,8 @@ export default function CreateNotePage() {
      router.push(`/notes/${tagId}/edit`);
   };
 
-  const handleSaveNote = (noteData: any) => {
-    console.log("Create note:", noteData);
-    // Dans une implémentation réelle, on créerait la note et on redirigerait vers la nouvelle note
-    router.push("/");
+  const handleSaveNote = () => {
+    console.log("Create note:");
   };
 
   const handleCancelEdit = () => {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { useMobile } from "@/hooks/use-mobile";
+// import { useMobile } from "@/hooks/use-mobile";
 import { Search } from "@/components/search";
 
 // Exemple de données pour la démo
@@ -73,7 +73,7 @@ export default function SearchPage() {
             ))
           ) : (
             <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-              No results found for "{query}"
+              No results found for
             </div>
           )
         ) : (

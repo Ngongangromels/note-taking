@@ -53,7 +53,18 @@ export default function NotesPage() {
   };
 
   
-
+ if(!isAuthenticated) {
+   // Affichage mobile
+   if (isMobile) {
+     return (
+       <MobileNotesList
+         notes={notes || []}
+         onNoteSelect={() => {}}
+         onCreateNote={() => {}}
+       />
+     );
+   }
+ }
   // Affichage mobile
   if (isMobile) {
     return (

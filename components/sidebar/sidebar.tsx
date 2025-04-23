@@ -52,16 +52,18 @@ export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
           <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">
             Tags
           </h2>
-          <div className="mt-2 space-y-1">
-            {tags.map((tag) => (
-              <TagItem
-                key={tag._id}
-                tag={tag}
-                isActive={activeTag === tag._id}
-                onClick={() => onTagSelect?.(tag._id)}
-              />
-            ))}
-          </div>
+          {isAuthenticated && (
+            <div className="mt-2 space-y-1">
+              {tags.map((tag) => (
+                <TagItem
+                  key={tag._id}
+                  tag={tag}
+                  isActive={activeTag === tag._id}
+                  onClick={() => onTagSelect?.(tag._id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

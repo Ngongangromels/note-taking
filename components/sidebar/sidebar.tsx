@@ -35,7 +35,7 @@ export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
         {isAuthenticated ? (
           <div className="px-2 py-1">
             <Popover>
-              <PopoverTrigger className="w-full mt-4 ml-10">
+              <PopoverTrigger className="w-full mt-2 ">
                 <Item icon={<Archive size={16} />} label="Archived Notes" />
               </PopoverTrigger>
               <PopoverContent className="p-0 w-72">

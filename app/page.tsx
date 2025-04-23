@@ -65,7 +65,6 @@ export default function NotesPage() {
      );
    }
  }
-  // Affichage mobile
   if (isMobile) {
     return (
       <MobileNotesList
@@ -104,7 +103,6 @@ export default function NotesPage() {
       </div>
     );
   }
-  // Affichage desktop
   return (
     <div className="flex h-screen bg-white dark:bg-gray-900">
       <Sidebar tags={tag || []} onTagSelect={handleTagSelect} />

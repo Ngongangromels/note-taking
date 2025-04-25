@@ -5,7 +5,6 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useConvexAuth } from "convex/react";
 import { Spinner } from "../spinner";
 import { SignInButton, UserButton } from "@clerk/clerk-react";
-import { LogIn } from "lucide-react";
 
 interface MobileNotesListProps {
   notes: Doc<"notes">[];

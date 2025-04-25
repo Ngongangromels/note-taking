@@ -2,6 +2,10 @@
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Doc, Id } from "@/convex/_generated/dataModel";
+import { useConvexAuth } from "convex/react";
+import { Spinner } from "../spinner";
+import { SignInButton, UserButton } from "@clerk/clerk-react";
+import { LogIn } from "lucide-react";
 
 interface MobileNotesListProps {
   notes: Doc<"notes">[];
@@ -14,6 +18,8 @@ export function MobileNotesList({
   onNoteSelect,
   onCreateNote,
 }: MobileNotesListProps) {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
@@ -22,28 +28,38 @@ export function MobileNotesList({
           <h1 className="text-xl font-semibold dark:text-white">Notes</h1>
         </div>
         <ThemeToggle />
+        {isLoading && <Spinner />}
+        {!isAuthenticated && !isLoading && <SignInButton>Log-in</SignInButton>}
+        {isAuthenticated && !isLoading && <UserButton />}
       </div>
-
       <div className="flex-1 overflow-auto">
-        {notes.map((note) => (
-          <div
-            key={note._id}
-            className="border-b border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-            onClick={() => onNoteSelect?.(note._id)}
-          >
-            <h2 className="font-medium dark:text-white">{note.title}</h2>
-            <div className="flex mt-2 space-x-2 flex-wrap">
-                <span
-                  className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs rounded dark:text-gray-200"
-                >
-                  {note.tag}
-                </span>
-            </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              {note._creationTime}
-            </div>
+        {isLoading && <Spinner />}
+        {!isAuthenticated && !isLoading && (
+          <div className="flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+            <p className="text-lg">You have no notes for the moment</p>
           </div>
-        ))}
+        )}
+        {isAuthenticated && !isLoading && (
+          <>
+            {notes.map((note) => (
+              <div
+                key={note._id}
+                className="border-b border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => onNoteSelect?.(note._id)}
+              >
+                <h2 className="font-medium dark:text-white">{note.title}</h2>
+                <div className="flex mt-2 space-x-2 flex-wrap">
+                  <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs rounded dark:text-gray-200">
+                    {note.tag}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                  {note._creationTime}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 dark:bg-gray-900 dark:border-gray-700 md:hidden">

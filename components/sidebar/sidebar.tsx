@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { TrashBox } from "../trash-box";
 import { useConvexAuth } from "convex/react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
+import { redirect } from "next/navigation";
 
 interface SidebarProps {
   tags: Doc<"notes">[];
@@ -45,7 +46,11 @@ export function Sidebar({ tags, activeTag, onTagSelect }: SidebarProps) {
           </div>
         ) : (
           <div className="px-2 py-1">
-            <Item icon={<Archive size={16} />} label="Archived Notes" />
+            <Item
+              onClick={() => redirect("/sign-in")}
+              icon={<Archive size={16} />}
+              label="Archived Notes"
+            />
           </div>
         )}
         <div className="mt-6 px-4">

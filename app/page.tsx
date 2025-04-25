@@ -17,18 +17,22 @@ export default function NotesPage() {
   const isMobile = useMobile();
   const { isAuthenticated } = useConvexAuth()
 
+  
   const notes = useQuery(api.notes.get);
+
   const create = useMutation(api.notes.create);
-  const tag = useQuery(api.notes.getTags)?.map(tag => ({
-    _id: tag.noteId,
-    _creationTime: Date.now(), 
-    tag: tag.tag,
-    title: "Default Title", 
-    userId: "Default User", 
-    isArchived: false, 
-    content: "Default Content", 
-    isPublished: false, 
-  }));
+
+
+  const tag = useQuery(api.notes.getTags)?.map((tag) => ({
+       _id: tag.noteId,
+       _creationTime: Date.now(),
+       tag: tag.tag,
+       title: "Default Title",
+       userId: "Default User",
+       isArchived: false,
+       content: "Default Content",
+       isPublished: false,
+     })) 
 
   const handleNoteSelect = (noteId: Id<"notes">) => {
     router.push(`/notes/${noteId}`);

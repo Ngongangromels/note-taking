@@ -7,7 +7,8 @@ export const get = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
-      throw new Error("Not authenticated");
+      return []
+      // throw new Error("Not authenticated");
     }
 
     const userId = identity.subject;
@@ -100,13 +101,13 @@ export const update = mutation({
 
     const { id, ...rest } = args;
 
-    const existingDocument = await ctx.db.get(args.id);
+    const existingNotes = await ctx.db.get(args.id);
 
-    if (!existingDocument) {
+    if (!existingNotes) {
       throw new Error("Not found");
     }
 
-    if (existingDocument.userId !== userId) {
+    if (existingNotes.userId !== userId) {
       throw new Error("Unauthorized");
     }
 
@@ -129,21 +130,21 @@ export const archive = mutation({
 
     const userId = identity.subject;
 
-    const existingDocument = await ctx.db.get(args.id);
+    const existingNotes = await ctx.db.get(args.id);
 
-    if (!existingDocument) {
+    if (!existingNotes) {
       throw new ConvexError("Not found");
     }
 
-    if (existingDocument.userId !== userId) {
+    if (existingNotes.userId !== userId) {
       throw new ConvexError("Unauthorized");
     }
 
-    const document = await ctx.db.patch(args.id, {
+    const notes = await ctx.db.patch(args.id, {
       isArchived: true,
     });
 
-    return document;
+    return notes;
   },
 });
 
@@ -181,7 +182,7 @@ export const remove = mutation({
     const existingNote = await ctx.db.get(args.id);
 
     if (!existingNote) {
-      throw new Error("Not f");
+      throw new Error("Not found");
     }
 
     if (existingNote.userId !== userId) {
@@ -199,6 +200,7 @@ export const getTags = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
+      return []
       throw new ConvexError("Not authenticated");
     }
 

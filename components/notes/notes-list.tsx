@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useConvexAuth } from "convex/react";
 import { SignIn,} from "@clerk/clerk-react";
+import { redirect } from "next/navigation";
 
 interface NotesListProps {
   notes: Doc<"notes">[];
@@ -28,8 +29,10 @@ export function NotesList({
       <div className="p-4">
         <Button
           variant="secondary"
-          className="w-full  bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-          onClick={!isAuthenticated ? () => <SignIn /> : onCreateNote}
+          className="w-full  bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer"
+          onClick={
+            !isAuthenticated ? () => redirect("/sign-in") : onCreateNote
+          }
         >
           Create New Note{<Plus size={18} />}
         </Button>

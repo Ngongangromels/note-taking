@@ -5,6 +5,7 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useConvexAuth } from "convex/react";
 import { Spinner } from "../spinner";
 import { SignInButton, UserButton } from "@clerk/clerk-react";
+import Link from "next/link";
 
 interface MobileNotesListProps {
   notes: Doc<"notes">[];
@@ -67,7 +68,7 @@ export function MobileNotesList({
             Home
           </button>
           <button className="flex items-center justify-center w-12 h-12 rounded-full text-gray-500 dark:text-gray-400">
-            Search
+            <Link href="/search"> Search</Link>
           </button>
           <button
             onClick={onCreateNote}
@@ -76,10 +77,10 @@ export function MobileNotesList({
             Create
           </button>
           <button className="flex items-center justify-center w-12 h-12 rounded-full text-gray-500 dark:text-gray-400">
-            Tags
+            <Link href="/tags"> Tags</Link>
           </button>
           <button className="flex items-center justify-center w-12 h-12 rounded-full text-gray-500 dark:text-gray-400">
-            Settings
+            <Link href="/settings"> Settings</Link>
           </button>
         </div>
       </div>

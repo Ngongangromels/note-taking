@@ -3,32 +3,33 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-// import { useMobile } from "@/hooks/use-mobile";
 import { Search } from "@/components/search";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
-// Exemple de données pour la démo
-const exampleNotes = [
-  {
-    id: "note1",
-    title: "Exemple de note",
-    content: "Contenu de la note...",
-    tags: ["Dev", "Work"],
-    lastEdited: "29 Oct 2024",
-  },
-];
 
 export default function SearchPage() {
+  const notes = useQuery(api.notes.get)
   const router = useRouter();
-  // const isMobile = useMobile();
   const [query, setQuery] = useState("");
-  const [filteredNotes, setFilteredNotes] = useState(exampleNotes);
+  const [filteredNotes, setFilteredNotes] = useState(notes ?? []);
 
+  // const handleSearch = (searchQuery: string) => {
+  //   setQuery(searchQuery);
+  //   setFilteredNotes(notes || []);
+  // };
   const handleSearch = (searchQuery: string) => {
     setQuery(searchQuery);
-    setFilteredNotes(exampleNotes);
+    const filtered = (notes || []).filter(
+      (note) =>
+        note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (note.tag?.toLowerCase() ?? "").includes(searchQuery.toLowerCase())
+    );
+    setFilteredNotes(filtered);
   };
 
-  const handleNoteSelect = (noteId: string) => {
+  const handleNoteSelect = (noteId: Id<"notes">) => {
     router.push(`/notes/${noteId}`);
   };
 
@@ -48,26 +49,24 @@ export default function SearchPage() {
 
       <div className="flex-1 overflow-auto">
         {query ? (
-          filteredNotes.length > 0 ? (
-            filteredNotes.map((note) => (
+          (filteredNotes?.length ?? 0) > 0 ? (
+            filteredNotes?.map((note) => (
               <div
-                key={note.id}
+                key={note._id}
                 className="border-b border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                onClick={() => handleNoteSelect(note.id)}
+                onClick={() => handleNoteSelect(note._id)}
               >
                 <h2 className="font-medium dark:text-white">{note.title}</h2>
                 <div className="flex mt-2 space-x-2 flex-wrap">
-                  {note.tags.map((tag, index) => (
                     <span
-                      key={index}
                       className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs rounded dark:text-gray-200"
                     >
-                      {tag}
+                      {note.tag}
                     </span>
-                  ))}
+                
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                  {note.lastEdited}
+                  {note._creationTime}
                 </div>
               </div>
             ))

@@ -85,6 +85,7 @@ export default function EditNotePage() {
         {noteCreated ? (
           <div>
             <MobileNoteEditor
+            noteId={noteId}
               note={noteCreated}
               onBack={() => router.push("/")}
               onSave={handleSaveNote}

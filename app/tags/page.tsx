@@ -2,20 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft, TagIcon } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
-// Exemple de données pour la démo
-const exampleTags = [
-  { id: "dev", name: "Dev" },
-  { id: "personal", name: "Personal" },
-  { id: "work", name: "Work" },
-];
 
 export default function TagsPage() {
   const router = useRouter();
+  const tag = useQuery(api.notes.getTags)
 
-  const handleTagSelect = (tagId: string) => {
-    console.log("Tag selected:", tagId);
-    router.push("/");
+  const handleTagSelect = (tagId: Id<"notes">) => {
+    router.push(`/notes/${tagId}`);
   };
 
   return (
@@ -32,18 +29,18 @@ export default function TagsPage() {
 
       <div className="flex-1 overflow-auto p-4">
         <div className="grid grid-cols-2 gap-4">
-          {exampleTags.map((tag) => (
+          {tag?.map((tag) => (
             <div
-              key={tag.id}
+              key={tag.noteId}
               className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => handleTagSelect(tag.id)}
+              onClick={() => handleTagSelect(tag.noteId)}
             >
               <div className="flex items-center">
                 <TagIcon
                   size={16}
                   className="mr-2 text-gray-500 dark:text-gray-400"
                 />
-                <span className="font-medium dark:text-white">{tag.name}</span>
+                <span className="font-medium dark:text-white">{tag.tag}</span>
               </div>
             </div>
           ))}

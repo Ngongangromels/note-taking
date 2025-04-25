@@ -8,9 +8,14 @@ import { Button } from "../ui/button";
 
 interface MobileNoteEditorProps {
   note?: Doc<"notes">;
-  noteId?: Id<"notes">,
+  noteId?: Id<"notes">;
   onBack?: () => void;
-  onSave?: (noteId: Id<"notes">, title: string, content: string, tag: string) => void;
+  onSave: (
+    noteId: Id<"notes">,
+    title: string,
+    content: string,
+    tags: string
+  ) => void;
   onCancel?: () => void;
 }
 
@@ -45,12 +50,10 @@ export function MobileNoteEditor({
           </button>
          <Button onClick={() => {
             if (noteId) {
-              if (onSave) {
                 onSave(noteId, title, content, tags);
               } else {
                 console.error("onSave is undefined");
               }
-            }
           }}>
             Save Note
           </Button>
